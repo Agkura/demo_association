@@ -1,0 +1,33 @@
+
+puts "Input your email:"
+
+email = gets.chomp
+
+if User.exists?(email: email)
+  user = User.find_by(email: email)
+else
+  user = User.create(email: email)
+end
+
+puts "What do you want to do?"
+puts "0. Create shortend URL"
+puts "1. Visit shortend URL"
+
+choice = gets.chomp.to_i
+
+if choice == 0
+  puts "Type in your long url"
+  new_url = ShortenedUrl.shorten(user, gets.chomp)
+
+  puts "Your short URL is: #{new_url.short_url}"
+else
+  puts "Type in the shortened URL"
+  url = gets.chomp
+  launch = ShortenedUrl.find_by(short_url: url)
+
+  Visit.record_visit!(user, launch)
+
+  puts "Launching #{launch.long_url}..."
+  puts "Goodbye!"
+  Launchy.open(launch.long_url)
+end
